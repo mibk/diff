@@ -60,7 +60,7 @@ func TestDiff(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := Diff(tt.a, tt.b)
+		got := IntSlices(tt.a, tt.b)
 		want, err := parseScript(tt.want)
 		if err != nil {
 			t.Fatalf("%s: %v", tt.name, err)

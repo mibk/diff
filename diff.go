@@ -19,8 +19,13 @@ type Edit struct {
 	Arg   int // only valid for Insert
 }
 
-func Diff(a, b []int) []Edit {
-	N, M := len(a), len(b)
+type Data interface {
+	Lens() (n, m int)
+	Equal(i, j int) bool
+}
+
+func Diff(data Data) []Edit {
+	N, M := data.Lens()
 	MAX := N + M
 
 	V := map[int]int{1: 0}
@@ -37,7 +42,7 @@ func Diff(a, b []int) []Edit {
 
 			y = x - k
 			x0, y0 := x, y
-			for x < N && y < M && a[x] == b[y] {
+			for x < N && y < M && data.Equal(x, y) {
 				x, y = x+1, y+1
 			}
 			V[k] = x
@@ -50,7 +55,7 @@ func Diff(a, b []int) []Edit {
 					} else {
 						x1--
 					}
-					ed := Diff(a[:x1], b[:y1])
+					ed := Diff(&bounded{data, x1, y1})
 
 					var e Edit
 					if vert {
@@ -66,3 +71,19 @@ func Diff(a, b []int) []Edit {
 	}
 	panic("unreachable")
 }
+
+type bounded struct {
+	Data
+	n, m int
+}
+
+func (b *bounded) Lens() (n, m int) { return b.n, b.m }
+
+func IntSlices(a, b []int) []Edit { return Diff(&intSlices{a, b}) }
+
+type intSlices struct {
+	a, b []int
+}
+
+func (p *intSlices) Lens() (n, m int)    { return len(p.a), len(p.b) }
+func (p *intSlices) Equal(i, j int) bool { return p.a[i] == p.b[j] }

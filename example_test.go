@@ -9,7 +9,7 @@ import (
 func Example_simpleDiffOutput() {
 	a := []int{'A', 'B', 'C', 'A', 'B', 'B', 'A', 'D'}
 	b := []int{'C', 'B', 'A', 'B', 'A', 'C', 'D'}
-	eds := diff.Diff(a, b)
+	eds := diff.IntSlices(a, b)
 
 	var i int
 	for _, e := range eds {
