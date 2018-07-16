@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestDiff(t *testing.T) {
+func TestIntSlices(t *testing.T) {
 	tests := []struct {
 		name string
 		a, b []int
@@ -100,4 +100,66 @@ func parseScript(s string) ([]Edit, error) {
 		eds = append(eds, Edit{i, op, arg})
 	}
 	return eds, nil
+}
+
+func BenchmarkSimilarIntSlices(b *testing.B) {
+	x := []int{9, 17, 6, 60, 3, 0, 17, 4, 19, 20, 1, 21, 4, 6}
+	y := []int{0, 7, 72, 60, 3, 1, 34, 9, 68, 7, 8, 17, 4, 19, 20, 76, 7, 21, 4, 6}
+	for i := 0; i < b.N; i++ {
+		IntSlices(x, y)
+	}
+}
+
+func BenchmarkEqualIntSlices1K(b *testing.B) {
+	const n = 1 << 10
+	x := make([]int, n)
+	for i := range x {
+		x[i] = i + 10
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		IntSlices(x, x)
+	}
+}
+
+func BenchmarkEqualIntSlices64K(b *testing.B) {
+	const n = 1 << 16
+	x := make([]int, n)
+	for i := range x {
+		x[i] = i + 16
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		IntSlices(x, x)
+	}
+}
+
+func BenchmarkTotallyDifferentIntSlices1K(b *testing.B) {
+	const n = 1 << 10
+	x, y := make([]int, n), make([]int, n)
+	for i := range x {
+		x[i] = i - 7
+		y[i] = i + 13
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		IntSlices(x, y)
+	}
+}
+
+func BenchmarkTotallyDifferentIntSlices64K(b *testing.B) {
+	const n = 1 << 16
+	x, y := make([]int, n), make([]int, n)
+	for i := range x {
+		x[i] = i - 7
+		y[i] = i + 13
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		IntSlices(x, y)
+	}
 }
