@@ -12,15 +12,15 @@ func Example_simpleDiffOutput() {
 	eds := diff.IntSlices(a, b)
 
 	var i int
-	for _, e := range eds {
-		for ; i < e.Index; i++ {
+	for _, ed := range eds {
+		for ; i < ed.Index; i++ {
 			fmt.Printf(" %c\n", a[i])
 		}
-		if e.Op == diff.Delete {
+		if ed.Op == diff.Delete {
 			fmt.Printf("-%c\n", a[i])
 			i++
 		} else {
-			fmt.Printf("+%c\n", b[e.Arg])
+			fmt.Printf("+%c\n", b[ed.Arg])
 		}
 	}
 	for ; i < len(a); i++ {

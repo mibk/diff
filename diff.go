@@ -25,45 +25,45 @@ type Data interface {
 }
 
 func Diff(data Data) []Edit {
-	N, M := data.Lens()
-	MAX := N + M
+	n, m := data.Lens()
+	max := n + m
 
-	V := map[int]int{1: 0}
-	for D := 0; D <= MAX; D++ {
-		for k := -D; k <= D; k += 2 {
+	endp := map[int]int{1: 0}
+	for d := 0; d <= max; d++ {
+		for k := -d; k <= d; k += 2 {
 			var x, y int
 			vert := true
-			if k == -D || k != D && V[k-1] < V[k+1] {
-				x = V[k+1]
+			if k == -d || k != d && endp[k-1] < endp[k+1] {
+				x = endp[k+1]
 			} else {
-				x = V[k-1] + 1
+				x = endp[k-1] + 1
 				vert = false
 			}
 
 			y = x - k
 			x0, y0 := x, y
-			for x < N && y < M && data.Equal(x, y) {
+			for x < n && y < m && data.Equal(x, y) {
 				x, y = x+1, y+1
 			}
-			V[k] = x
+			endp[k] = x
 
-			if x >= N && y >= M {
-				if D > 0 {
+			if x >= n && y >= m {
+				if d > 0 {
 					x1, y1 := x0, y0
 					if vert {
 						y1--
 					} else {
 						x1--
 					}
-					ed := Diff(&bounded{data, x1, y1})
+					eds := Diff(&bounded{data, x1, y1})
 
-					var e Edit
+					var ed Edit
 					if vert {
-						e = Edit{x0, Insert, y0 - 1}
+						ed = Edit{x0, Insert, y0 - 1}
 					} else {
-						e = Edit{x0 - 1, Delete, 0}
+						ed = Edit{x0 - 1, Delete, 0}
 					}
-					return append(ed, e)
+					return append(eds, ed)
 				}
 				return nil
 			}
