@@ -2,6 +2,7 @@ package diff
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -61,6 +62,82 @@ func TestIntSlices(t *testing.T) {
 
 	for _, tt := range tests {
 		got := IntSlices(tt.a, tt.b)
+		want, err := parseScript(tt.want)
+		if err != nil {
+			t.Fatalf("%s: %v", tt.name, err)
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("%s:\n got %s\nwant %s", tt.name, got, want)
+		}
+	}
+}
+
+func TestFloat64Slices(t *testing.T) {
+	tests := []struct {
+		name string
+		a, b []float64
+		want string
+	}{
+		{
+			name: "equal",
+			a:    []float64{74.3, math.Inf(1), -784.0, -12.13, math.Inf(-1), -959.7485},
+			b:    []float64{74.3, math.Inf(1), -784.0, -12.13, math.Inf(-1), -959.7485},
+			want: ``,
+		},
+		{
+			name: "totally different",
+			a:    []float64{74.3, -784.0, math.NaN(), math.Inf(-1), -959.7485},
+			b:    []float64{74.8, math.Inf(1), math.NaN(), -856.0, -959.7415, -9.19},
+			want: `0d 1d 2d 3d 4d 5i(0) 5i(1) 5i(2) 5i(3) 5i(4) 5i(5)`,
+		},
+		{
+			name: "somewhat similar",
+			a:    []float64{74.3, math.Inf(1), -932.15, math.NaN(), math.Inf(-1), 3.16},
+			b:    []float64{74.3, 23, -784.0, math.NaN(), math.Inf(-1), -959.7485},
+			want: `1d 2d 3d 4i(1) 4i(2) 4i(3) 5d 6i(5)`,
+		},
+	}
+
+	for _, tt := range tests {
+		got := Float64Slices(tt.a, tt.b)
+		want, err := parseScript(tt.want)
+		if err != nil {
+			t.Fatalf("%s: %v", tt.name, err)
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("%s:\n got %s\nwant %s", tt.name, got, want)
+		}
+	}
+}
+
+func TestStringSlices(t *testing.T) {
+	tests := []struct {
+		name string
+		a, b []string
+		want string
+	}{
+		{
+			name: "equal",
+			a:    []string{"", "R-BDYZWYuwtf4LSc4fepTtddAWN-_b", "AA", "BB", "\r\n\a\t"},
+			b:    []string{"", "R-BDYZWYuwtf4LSc4fepTtddAWN-_b", "AA", "BB", "\r\n\a\t"},
+			want: ``,
+		},
+		{
+			name: "totally different",
+			a:    []string{"", "a", "l2wbOryHIR6dqNh", "zXDL7Z6lEAuzEbO", "lKUDks1r6BQuiHF"},
+			b:    []string{"MuV3BeGPyV0mZaC", "No7hw2kmcMNa_CB", "zZ-Ofu9Cgngz_9P", "03ffA1DOPGQge2O", "tTMNvwE59_Cs6Lb", "xy"},
+			want: `0d 1d 2d 3d 4d 5i(0) 5i(1) 5i(2) 5i(3) 5i(4) 5i(5)`,
+		},
+		{
+			name: "somewhat similar",
+			a:    []string{"all", "work", "and", "KXZYNbiN5kvFajd", "play"},
+			b:    []string{" ", "work", "and", "play", "makes", "FoROCdv", "a", "--"},
+			want: `0d 1i(0) 3d 5i(4) 5i(5) 5i(6) 5i(7)`,
+		},
+	}
+
+	for _, tt := range tests {
+		got := StringSlices(tt.a, tt.b)
 		want, err := parseScript(tt.want)
 		if err != nil {
 			t.Fatalf("%s: %v", tt.name, err)

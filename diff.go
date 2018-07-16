@@ -103,3 +103,23 @@ type intSlices struct {
 
 func (p *intSlices) Lens() (n, m int)    { return len(p.a), len(p.b) }
 func (p *intSlices) Equal(i, j int) bool { return p.a[i] == p.b[j] }
+
+// Float64Slices creates an edit script for two slices of float64s.
+func Float64Slices(a, b []float64) []Edit { return Diff(&float64Slices{a, b}) }
+
+type float64Slices struct {
+	a, b []float64
+}
+
+func (p *float64Slices) Lens() (n, m int)    { return len(p.a), len(p.b) }
+func (p *float64Slices) Equal(i, j int) bool { return p.a[i] == p.b[j] }
+
+// StringSlices creates an edit script for two slices of strings.
+func StringSlices(a, b []string) []Edit { return Diff(&stringSlices{a, b}) }
+
+type stringSlices struct {
+	a, b []string
+}
+
+func (p *stringSlices) Lens() (n, m int)    { return len(p.a), len(p.b) }
+func (p *stringSlices) Equal(i, j int) bool { return p.a[i] == p.b[j] }
