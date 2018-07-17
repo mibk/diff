@@ -11,6 +11,7 @@ func Example_simpleDiffOutput() {
 	b := []string{"Cyril", "Bob", "Alice", "Bob", "Alice", "Cyril", "Daniel"}
 	eds := diff.StringSlices(a, b)
 
+	eds = append(eds, diff.Edit{Index: len(a), Op: diff.None})
 	var i int
 	for _, ed := range eds {
 		for ; i < ed.Index; i++ {
@@ -19,12 +20,9 @@ func Example_simpleDiffOutput() {
 		if ed.Op == diff.Delete {
 			fmt.Printf("-%s\n", a[i])
 			i++
-		} else {
+		} else if ed.Op == diff.Insert {
 			fmt.Printf("+%s\n", b[ed.Arg])
 		}
-	}
-	for ; i < len(a); i++ {
-		fmt.Printf(" %s\n", a[i])
 	}
 
 	// output:

@@ -10,8 +10,13 @@ package diff
 type Operation int
 
 // The list of possible operations.
+//
+// None is never used by the package. It can be used as a sentinel
+// operation for Edit.Op; the value is reserved. See the simple diff
+// output example for illustration of usage.
 const (
-	Delete Operation = iota
+	None Operation = iota
+	Delete
 	Insert
 )
 
