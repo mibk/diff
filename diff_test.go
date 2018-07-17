@@ -153,7 +153,7 @@ func (e Edit) String() string {
 	case Delete:
 		return fmt.Sprintf("%dd", e.Index)
 	case Insert:
-		return fmt.Sprintf("%di(%d)", e.Index, e.Arg)
+		return fmt.Sprintf("%di(%d)", e.Index, e.Bindex)
 	default:
 		panic("unknown op")
 	}

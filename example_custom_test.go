@@ -24,7 +24,7 @@ func missingIgnoreCase(a, b []string) []string {
 	var miss []string
 	for _, ed := range eds {
 		if ed.Op == diff.Insert {
-			miss = append(miss, b[ed.Arg])
+			miss = append(miss, b[ed.Bindex])
 		}
 	}
 	return miss

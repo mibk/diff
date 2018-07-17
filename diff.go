@@ -21,29 +21,34 @@ const (
 )
 
 // An Edit represents an element in the edit script, produced by the
-// Diff function. An edit script represents a set of operations describing
-// how to convert the first collection into the second one.
+// Diff function. The edit script represents a set of operations
+// describing how to convert the sequence A into the sequence B.
+//
+// Each Edit has an operation Op (either Insert or Delete) that should
+// occur at Index in A in order to convert it into B. If Op is Insert,
+// Bindex represents the index of the element in B that should be
+// inserted into A at Index.
 type Edit struct {
-	Index int // index where the operation should occur
-	Op    Operation
-	Arg   int // only valid for Insert
+	Index  int // index where the operation should occur
+	Op     Operation
+	Bindex int // only valid for Insert
 }
 
 // Data is the interface that is used by the Diff function to produce
 // an edit script. A type that satisfies the Data interface is typically
 // a wrapper around two collections. The method requires that the
-// elements of the collections be enumerated by integer indexes.
+// elements of the sequences be enumerated by integer indexes.
 type Data interface {
-	// Lens returns the lengths of the underlying collections.
+	// Lens returns the lengths of the underlying sequences.
 	Lens() (n, m int)
-	// Equal reports whether the elements from the two collections
+	// Equal reports whether the elements from the two sequences
 	// with indexes i and j are equal.
 	Equal(i, j int) bool
 }
 
 // Diff creates an edit script for data. The edit script represents a
-// set of operations describing how to convert from the first collection
-// into the second one.
+// set of operations describing how to convert the sequence A into the
+// sequence B.
 func Diff(data Data) []Edit {
 	n, m := data.Lens()
 	return diff(data, n, m, make([]int, 2*(n+m)+1))

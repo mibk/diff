@@ -21,7 +21,7 @@ func Example_simpleDiffOutput() {
 			fmt.Printf("-%s\n", a[i])
 			i++
 		} else if ed.Op == diff.Insert {
-			fmt.Printf("+%s\n", b[ed.Arg])
+			fmt.Printf("+%s\n", b[ed.Bindex])
 		}
 	}
 
