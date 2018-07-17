@@ -41,26 +41,35 @@ type Data interface {
 // into the second one.
 func Diff(data Data) []Edit {
 	n, m := data.Lens()
-	max := n + m
+	return diff(data, n, m, make([]int, 2*(n+m)+1))
+}
 
-	endp := map[int]int{1: 0}
+func diff(data Data, n, m int, endp []int) []Edit {
+	max := n + m
+	if max == 0 {
+		return nil
+	}
+
+	endp[max+1] = 0
 	for d := 0; d <= max; d++ {
 		for k := -d; k <= d; k += 2 {
-			var x, y int
+			j := max + k
+			var x int
 			vert := true
-			if k == -d || k != d && endp[k-1] < endp[k+1] {
-				x = endp[k+1]
+			if k == -d || k != d && endp[j-1] < endp[j+1] {
+				x = endp[j+1]
 			} else {
-				x = endp[k-1] + 1
+				x = endp[j-1] + 1
 				vert = false
 			}
 
-			y = x - k
+			y := x - k
+
 			x0, y0 := x, y
 			for x < n && y < m && data.Equal(x, y) {
 				x, y = x+1, y+1
 			}
-			endp[k] = x
+			endp[j] = x
 
 			if x >= n && y >= m {
 				if d > 0 {
@@ -70,13 +79,13 @@ func Diff(data Data) []Edit {
 					} else {
 						x1--
 					}
-					eds := Diff(&bounded{data, x1, y1})
+					eds := diff(data, x1, y1, endp[:len(endp)-2])
 
 					var ed Edit
 					if vert {
-						ed = Edit{x0, Insert, y0 - 1}
+						ed = Edit{x1, Insert, y1}
 					} else {
-						ed = Edit{x0 - 1, Delete, 0}
+						ed = Edit{x1, Delete, 0}
 					}
 					return append(eds, ed)
 				}
@@ -86,13 +95,6 @@ func Diff(data Data) []Edit {
 	}
 	panic("unreachable")
 }
-
-type bounded struct {
-	Data
-	n, m int
-}
-
-func (b *bounded) Lens() (n, m int) { return b.n, b.m }
 
 // IntSlices creates an edit script for two slices of ints.
 func IntSlices(a, b []int) []Edit { return Diff(&intSlices{a, b}) }
