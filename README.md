@@ -1,8 +1,14 @@
 # diff
 
 Package diff implements methods for comparing objects and producing
-edit scripts.
+edit scripts. The motivation to create the package was to be able
+to use the diff output format in tests where the output of
+[go-cmp](https://github.com/google/go-cmp) wasn't suitable. It
+isn't optimized for performance and as of now, it is a non-goal.
+[See the package documentation for more information](https://godoc.org/github.com/mibk/diff).
 
-The implementation is based on the algorithm described in the paper
-"An O(ND) Difference Algorithm and Its Variations" by Eugene W.
-Myers, Algorithmica Vol. 1 No. 2, 1986, p. 251.
+## Instalation
+
+```
+$ go get github.com/mibk/diff
+```
